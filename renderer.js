@@ -132,35 +132,18 @@ function checkChorus(queryString){
 
 function saveFile(link){
   console.log("saveFile called with link: " +link);
-  var options = {
-    url: link
-  };
-  request.get(options, function (error, response, body) {
-    if (!error && response.statusCode === 200) {
-      console.log(response.headers);
+
+  request
+    .get(link)
+    .on('response',function(response){
       let filename = response.headers['content-disposition'].split("filename*=UTF-8''")[1];
       let chpath = document.querySelector('.chpath').value;
       let filepath = chpath+"/Songs/"+filename;
-      console.log(filepath);
-      // Would check beforehand for existing file but Google Drive doesn't seem to support HEAD requests
-      // if (fs.existsSync(filepath)){
-        // console.log("File already exists");
-      // }
-      // else{
-        console.log("Writing file");
-        try {
-          // fs.writeFileSync(filepath,body);
-          let writeStream = fs.createWriteStream(filepath);
-          writeStream.write(body);
-          writeStream.end();
-        }
-        catch(error){
-          console.log("file write failed:");
-          console.log(error);
-        }
-      // }
-    }
-  });
+      if (fs.existsSync(filepath)){
+        console.log("File already exists, rewriting");
+      }
+      response.pipe(fs.createWriteStream(filepath))
+    });
 }
 
 function selectCloneHeroFolder(){
