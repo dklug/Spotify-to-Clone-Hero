@@ -52,14 +52,20 @@ function getPlaylists(token,username){
     let playlists = document.querySelector('.playlists');
     playlists.innerHTML="";
 
+    let playlistsString = "";
+
     for (let item in body.items){
-      playlist = body.items[item];
-      // console.log(playlist.name);
-      playlists.innerHTML+=`<button class="p`+item+`">`+playlist.name+`</button>`+`<br>`;
-      
-      let playlistButton = document.querySelector('.p'+item);
+      let playlist = body.items[item];
+      playlistsString +=`<button class="p${item}">${playlist.name}</button><br>`;
+    }
+    playlists.innerHTML=playlistsString;
+    // Need a separate loop for these because setting innerHTML would erase EventListeners
+    for (let item in body.items){
+      let playlist = body.items[item];
+      let playlistButton = document.getElementsByClassName('p'+item)[0];
+      // console.log(playlistButton);
       playlistButton.addEventListener('click', function (error) {
-        console.log("button pressed: ");
+        // console.log("button pressed: ");
         getTracks(token,username,playlist.id);
       });
     }
