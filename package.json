@@ -1,0 +1,24 @@
+{
+  "name": "Spotify-to-Clone-Hero",
+  "version": "1.0.0",
+  "description": "Find matches between Spotify playlists and Clone Hero charts",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": "https://github.com/dklug/Spotify-to-Clone-Hero",
+  "keywords": [
+    "Electron",
+    "Spotify",
+    "Clone",
+    "Hero"
+  ],
+  "author": "dklug",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^3.0.4"
+  },
+  "dependencies": {
+    "request": "~2.83.0"
+  }
+}
