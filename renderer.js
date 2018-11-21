@@ -94,27 +94,43 @@ function getTracks(token,username,playlistid){
     json: true
   };
   // console.log(options.url);
-  let trackString = "";
+  let trackString;
   request.get(options, function (error, response, body) {
     // console.log(body);
+    trackString = `<table class="table table-primary"
+                    <thead>
+                      <tr>
+                        <th scope="col">Song Name</th>
+                        <th scope="col">Download Progress</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                  `
     for (let item in body.items){
       let track = body.items[item].track;
       // console.log(track);
-      trackString+=track.name+"<br>"
-
       let album = track.album.name;
       let artist = track.artists[0].name;
-      // console.log(album+", "+artist);
-
-      checkChorus(`name="`+track.name+`" artist="`+artist+`" album="`+album+`"`);
+      let chartFound = checkChorus(`name="`+track.name+`" artist="`+artist+`" album="`+album+`"`, item);
+      trackString+= `<tr id="tr${item}" class="table-secondary">`
+      trackString+=`<td>${track.name}</td>`
+      trackString+=`<td>
+                      <div class="progress">
+                        <div id="bar${item}" class="progress-bar bg-info progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                      </div>
+                    </td>
+                    `
+      trackString+=`</tr>`
     }
+    trackString+=`</body>
+                </table>`
+
     let trackList = document.getElementById('tracks');
     trackList.innerHTML=trackString;
   });
-  
 }
 
-function checkChorus(queryString){
+function checkChorus(queryString, item){
   console.log(queryString);
   var options = {
     url: 'https://chorus.fightthe.pw/api/search?query='+queryString,
@@ -125,29 +141,53 @@ function checkChorus(queryString){
       // console.log(body);
       if (body.songs.length==0){
         console.log("Song not found");
+        // Set the table to red
+        let tbl = document.getElementById(`tr${item}`);
+        tbl.classList.remove("table-secondary");
+        tbl.classList.add("table-danger")
+        // return false;
       }
       else{
         let bestMatch = body.songs[0];
+        console.log("Song found:");
         console.log(bestMatch);
-        saveFile(bestMatch.directLinks.archive);
+        let tbl = document.getElementById(`tr${item}`);
+        tbl.classList.remove("table-secondary");
+        tbl.classList.add("table-success")
+        saveFile(bestMatch.directLinks.archive, item);
+        // return true;
       }
     }
   });
 }
 
-function saveFile(link){
+function saveFile(link,item){
   console.log("saveFile called with link: " +link);
 
-  request
-    .get(link)
+  let loadybar = document.getElementById(`bar${item}`);
+  let contentLength;
+  let contentProgress = 0;
+  let fakeMax = 19747365; // Size of one of the Dragonforce charts
+  let req = request
+    .get(link+"?fields=size")
     .on('response',function(response){
+      console.log(response.headers);
       let filename = response.headers['content-disposition'].split("filename*=UTF-8''")[1];
       let chpath = document.getElementById('chpath').value;
       let filepath = chpath+"/Songs/"+filename;
+      contentLength = response.headers['size'] || response.headers['content-length'] || fakeMax;
       if (fs.existsSync(filepath)){
         console.log("File already exists, rewriting");
       }
       response.pipe(fs.createWriteStream(filepath))
+    });
+    req.on('data',function(chunk){
+      contentProgress+=chunk.length;
+      let loadypercentage = "width: "+Math.ceil(contentProgress*100/contentLength)+"%";
+      loadybar.setAttribute("style",loadypercentage);
+    });
+    req.on('end',function(){
+      loadybar.setAttribute("class", "progress-bar bg-info");
     });
 }
 
