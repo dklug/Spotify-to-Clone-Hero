@@ -7,24 +7,28 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
   </head>
   <body>
-    <h1>Spotify to Clone Hero by dklug</h1>
-    <!-- All of the Node.js APIs are available in this renderer process. -->
-    We are using Node.js <script>document.write(process.versions.node)</script>,
-    Chromium <script>document.write(process.versions.chrome)</script>,
-    and Electron <script>document.write(process.versions.electron)</script>.
-    <br><br>
-
-    Clone Hero Folder:<br>
-    <button class="selectfolder">Select folder</button>
-    <input type="text" class="chpath"><br><br>
-
-    Username:<br>
-    <input type="text" class="username">
-    <button class="submit">⏎</button>
-
-    <p class="tracks">Tracks go here</p> <br>
-
-    <div class="playlists">Playlists go here</p>
+    <div class="container">
+        <h1>Spotify to Clone Hero by dklug</h1>
+        <!-- All of the Node.js APIs are available in this renderer process. -->
+        We are using Node.js <script>document.write(process.versions.node)</script>,
+        Chromium <script>document.write(process.versions.chrome)</script>,
+        and Electron <script>document.write(process.versions.electron)</script>.
+        <br><br>
+    
+        <div class="form-inline my-2 my-lg-0">
+            <button class="btn btn-secondary" id="selectfolder">Select folder</button>
+            <input class="form-control mr-sm-2" type="text" id="chpath" placeholder="Clone Hero Directory">
+        </div>
+        <br>
+        <div class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="text" id="username" placeholder="Username">
+            <button class="btn btn-secondary" id="submit">⏎</button>
+        </div>
+        <br>
+    
+        <div id="tracks"></div><br>
+        <div id="playlists"></div>
+    </div>
 
     <script>
       // You can also require other files to run in this process

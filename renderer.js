@@ -33,25 +33,25 @@ request.post(authOptions, function (error, response, body) {
 });
 
 // Set up folder select button
-let selectbutton = document.querySelector('.selectfolder');
+let selectbutton = document.getElementById('selectfolder');
 selectbutton.addEventListener('click', function (error) {
   selectCloneHeroFolder();
 });
 
 // Two options for the user to query their username
-let userSubmit = document.querySelector('.username');
+let userSubmit = document.getElementById('username');
 userSubmit.addEventListener('keyup', function (event) {
   if(event.keyCode===13){
     getPlaylists();
   }
 });
-let userSubmit2 = document.querySelector('.submit');
+let userSubmit2 = document.getElementById('submit');
 userSubmit2.addEventListener('click', function (event) {
   getPlaylists();
 });
 
 function getPlaylists(){
-  let username = document.querySelector('.username').value;
+  let username = document.getElementById('username').value;
   var options = {
     url: 'https://api.spotify.com/v1/users/'+username+"/playlists",
     headers: {
@@ -62,20 +62,20 @@ function getPlaylists(){
   request.get(options, function (error, response, body) {
     console.log(body);
 
-    let playlists = document.querySelector('.playlists');
+    let playlists = document.getElementById('playlists');
     playlists.innerHTML="";
 
     let playlistsString = "";
 
     for (let item in body.items){
       let playlist = body.items[item];
-      playlistsString +=`<button class="p${item}">${playlist.name}</button><br>`;
+      playlistsString +=`<button class="btn btn-success" id="p${item}">${playlist.name}</button><br>`;
     }
     playlists.innerHTML=playlistsString;
     // Need a separate loop for these because setting innerHTML would erase EventListeners
     for (let item in body.items){
       let playlist = body.items[item];
-      let playlistButton = document.getElementsByClassName('p'+item)[0];
+      let playlistButton = document.getElementById('p'+item);
       // console.log(playlistButton);
       playlistButton.addEventListener('click', function (error) {
         // console.log("button pressed: ");
@@ -108,7 +108,7 @@ function getTracks(token,username,playlistid){
 
       checkChorus(`name="`+track.name+`" artist="`+artist+`" album="`+album+`"`);
     }
-    let trackList = document.querySelector('.tracks');
+    let trackList = document.getElementById('tracks');
     trackList.innerHTML=trackString;
   });
   
@@ -142,7 +142,7 @@ function saveFile(link){
     .get(link)
     .on('response',function(response){
       let filename = response.headers['content-disposition'].split("filename*=UTF-8''")[1];
-      let chpath = document.querySelector('.chpath').value;
+      let chpath = document.getElementById('chpath').value;
       let filepath = chpath+"/Songs/"+filename;
       if (fs.existsSync(filepath)){
         console.log("File already exists, rewriting");
@@ -157,7 +157,7 @@ function selectCloneHeroFolder(){
   })
 
   console.log(cloneHeroPath[0]);
-  let chpath = document.querySelector('.chpath');
+  let chpath = document.getElementById('chpath');
   chpath.value = cloneHeroPath[0];
   // chpath.innerHTML=cloneHeroPath[0];
   // return cloneHeroPath[0];
