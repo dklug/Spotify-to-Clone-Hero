@@ -188,6 +188,7 @@ function saveFile(link,item){
     });
     req.on('end',function(){
       loadybar.setAttribute("class", "progress-bar bg-info");
+      loadybar.setAttribute("style","width: 100%");
     });
 }
 
