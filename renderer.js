@@ -9,7 +9,8 @@ var fs = require('fs');
 var client_id = 'YOUR-CLIENTID-HERE'; // Your client id
 var client_secret = 'YOUR-CLIENTSECRET-HERE'; // Your secret
 
-// your application requests authorization
+var token;
+// request token using authOptions
 var authOptions = {
   url: 'https://accounts.spotify.com/api/token',
   headers: {
@@ -21,32 +22,36 @@ var authOptions = {
   json: true
 };
 
+request.post(authOptions, function (error, response, body) {
+  if (!error && response.statusCode === 200) {
+    // use the access token to access the Spotify Web API
+    token = body.access_token;
+  }
+  else{
+    console.log("Token error: "+error);
+  }
+});
+
 // Set up folder select button
 let selectbutton = document.querySelector('.selectfolder');
 selectbutton.addEventListener('click', function (error) {
   selectCloneHeroFolder();
 });
 
-// Query username when button pressed
-let buttonquery = document.querySelector('.test');
-buttonquery.addEventListener('click', function (error) {
-  request.post(authOptions, function (error, response, body) {
-    if (!error && response.statusCode === 200) {
-      let userquery = document.querySelector('.username');
-      console.log(userquery);
-      if (userquery.value==null){
-        console.log("No username found");
-      }
-      console.log("username: " +userquery.value);
-
-      // use the access token to access the Spotify Web API
-      var token = body.access_token;
-      getPlaylists(token,userquery.value)
-    }
-  });
+// Two options for the user to query their username
+let userSubmit = document.querySelector('.username');
+userSubmit.addEventListener('keyup', function (event) {
+  if(event.keyCode===13){
+    getPlaylists();
+  }
+});
+let userSubmit2 = document.querySelector('.submit');
+userSubmit2.addEventListener('click', function (event) {
+  getPlaylists();
 });
 
-function getPlaylists(token,username){
+function getPlaylists(){
+  let username = document.querySelector('.username').value;
   var options = {
     url: 'https://api.spotify.com/v1/users/'+username+"/playlists",
     headers: {
